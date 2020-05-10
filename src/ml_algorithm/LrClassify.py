@@ -5,7 +5,7 @@ import src.utils.data_split as data_split
 import src.evaluate.classify_metrics as clf_metrics
 
 
-class CustomLr:
+class CustomLrClassify:
     def __init__(self, model):
         self.w = np.transpose(model.coef_)
         self.b = model.intercept_
@@ -23,6 +23,6 @@ if __name__ == '__main__':
     pred = clf.predict(test_feature)
     print("sklearn result:" + str(clf_metrics.accuracy(test_label, pred)))
 
-    myLr = CustomLr(model=clf)
+    myLr = CustomLrClassify(model=clf)
     myPred = myLr.predict(test_feature)
     print("my result:" + str(clf_metrics.accuracy(test_label, pred)))

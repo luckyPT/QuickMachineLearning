@@ -1,5 +1,5 @@
-import sklearn.metrics as metrics
+import numpy as np
 
 
 def accuracy(label, pred):
-    return metrics.accuracy_score(label, pred)
+    return np.sum(label == pred) / len(label)
