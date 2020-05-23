@@ -32,9 +32,19 @@ class CustomGaussianBayes:
         return joint_log_likelihood
 
 
+class CustomComplementNB:
+    def __init__(self, model):
+        self.feature_log_pro_ = model.feature_log_prob_.T
+
+    def predict_proba(self, X):
+        jll = np.dot(X, self.feature_log_pro_)
+        log_prob_x = np.log(np.sum(np.exp(jll), axis=1))
+        result = jll - np.atleast_2d(log_prob_x).T
+        return np.exp(result)
+
+
 if __name__ == '__main__':
-    feature = Iris.features
-    label = Iris.label
+    feature, label = Iris.features, Iris.label
     train_feature, test_feature, train_label, test_label = data_split.split(feature, label)
     nativeBayes = bayes.GaussianNB()
     nativeBayes.fit(train_feature, train_label)
@@ -42,4 +52,12 @@ if __name__ == '__main__':
     print("pred", pred)
     myBayes = CustomGaussianBayes(nativeBayes)
     my_pred = myBayes.predict_proba(test_feature)[0]
+    print("my_pred", my_pred)
+
+    complementBayes = bayes.ComplementNB()
+    complementBayes.fit(train_feature, train_label)
+    pred = complementBayes.predict_proba(test_feature)[0]
+    print("pred", pred)
+    myComplementBayes = CustomComplementNB(complementBayes)
+    my_pred = myComplementBayes.predict_proba(test_feature)[0]
     print("my_pred", my_pred)

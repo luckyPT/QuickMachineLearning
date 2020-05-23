@@ -1,4 +1,5 @@
 import numpy as np
+
 np.set_printoptions(suppress=True)
 from sklearn import linear_model
 from src.data.boston_house_price import BostonHousePrice
@@ -9,9 +10,9 @@ import src.evaluate.regression_metrics as metrics
 class CustomLrRegression:
     def __init__(self, model):
         self.w = np.transpose(model.coef_)
-        print(self.w)
+        print("w = ", self.w)
         self.b = model.intercept_
-        print(self.b)
+        print("b = ", self.b)
 
     def predict(self, feature):
         result = np.dot(feature, self.w) + self.b
@@ -33,3 +34,4 @@ if __name__ == '__main__':
     my_model = CustomLrRegression(reg)
     my_pred = my_model.predict(test_feature)
     print(metrics.error_ratio(test_label, my_pred))
+    print("mae = ", metrics.mean_absolute_error(test_label, my_pred))
