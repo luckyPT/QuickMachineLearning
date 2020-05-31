@@ -4,7 +4,7 @@ from src.data.iris import Iris
 from src.data.sk_data import BreastCancer
 import src.utils.data_split as data_split
 import src.evaluate.classify_metrics as clf_metrics
-import src.common.functions as functions
+import src.common.activations as activations
 
 
 class CustomLrMultiClassify:

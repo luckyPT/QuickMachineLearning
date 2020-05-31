@@ -1,7 +1,7 @@
 import numpy as np
 import tensorflow as tf
-from tensorflow.python.keras.layers import Dense
-from tensorflow.python.keras.models import Model
+from tensorflow.keras.layers import Dense
+from tensorflow.keras.models import Model
 
 from src.data.boston_house_price import BostonHousePrice
 import src.utils.data_split as ds
@@ -75,6 +75,7 @@ if __name__ == '__main__':
     EPOCHS = 1000
     for epoch in range(EPOCHS):
         train_step(train_feature, train_label)
+    test_step(test_feature, test_label)
     pred = model.call(test_feature)
     my_pred = model.custom_predict(test_feature)
     print(pred[0].numpy(), my_pred[0])
