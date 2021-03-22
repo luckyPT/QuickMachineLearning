@@ -1,5 +1,5 @@
 import numpy as np
-from src.data.iris import Iris
+from src.data.sk_data import Iris
 import src.utils.data_split as data_split
 import src.evaluate.classify_metrics as clf_metrics
 from sklearn import tree

@@ -1,7 +1,7 @@
 from sklearn.ensemble import AdaBoostClassifier
 from sklearn.model_selection import cross_val_score
 
-from src.data.iris import Iris
+from src.data.sk_data import Iris
 from src.utils import data_split
 from src.evaluate import classify_metrics
 
