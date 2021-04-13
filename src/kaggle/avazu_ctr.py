@@ -58,12 +58,28 @@ model.compile(loss='binary_crossentropy',
               metrics=['accuracy', tf.keras.metrics.AUC(curve='ROC'), tf.keras.metrics.AUC(curve='PR')])
 tbCallBack = TensorBoard(log_dir='./logs',  # log 目录
                          histogram_freq=1)
-cp_callback = tf.keras.callbacks.ModelCheckpoint(filepath="./checkPoint",
-                                                 save_weights_only=True,
-                                                 verbose=1)
-
+cp_callback = tf.keras.callbacks.ModelCheckpoint(
+    filepath="D:\\myself\\PyProjects\\QuickMachineLearning\\src\\kaggle\\model_{epoch:02d}-{val_loss:.2f}.hdf5",
+    verbose=1)
+model.load_weights("D:\\myself\\PyProjects\\QuickMachineLearning\\src\\kaggle\\model_05-0.28.hdf5")
+"""
 model.fit(data_set, epochs=5,
           batch_size=256,
           validation_data=data_set,
-
           callbacks=[tbCallBack, cp_callback])
+"""
+
+test_data_set = tf.data.experimental.make_csv_dataset(
+    file_pattern="../../data/avazu_ctr/train_data.csv",
+    batch_size=100,
+    na_value="0",
+    num_epochs=1,
+    shuffle=False,
+    ignore_errors=True
+)
+
+for d in test_data_set:
+    pred = model.predict(d)
+    print(d["click"])
+    print(pred)
+    break
