@@ -4,6 +4,7 @@ from tensorflow.python.keras.callbacks import TensorBoard
 """
 LR+FM+DEEP_FM
 数据处理可参考：https://github.com/luckyPT/jvm-ml/tree/master/src/main/java/com/pt/ml/kaggle
+需要使用python3.6以上版本，保证字典有序
 """
 tf.config.experimental_run_functions_eagerly(True)
 data_set = tf.data.experimental.make_csv_dataset(
@@ -59,15 +60,14 @@ model.compile(loss='binary_crossentropy',
 tbCallBack = TensorBoard(log_dir='./logs',  # log 目录
                          histogram_freq=1)
 cp_callback = tf.keras.callbacks.ModelCheckpoint(
-    filepath="D:\\myself\\PyProjects\\QuickMachineLearning\\src\\kaggle\\model_{epoch:02d}-{val_loss:.2f}.hdf5",
+    filepath="./model_{epoch:02d}-{loss:.4f}.hdf5",
+    save_freq=10,
     verbose=1)
-model.load_weights("D:\\myself\\PyProjects\\QuickMachineLearning\\src\\kaggle\\model_05-0.28.hdf5")
-"""
+model.load_weights("./model_01-0.75.hdf5")
 model.fit(data_set, epochs=5,
           batch_size=256,
           validation_data=data_set,
           callbacks=[tbCallBack, cp_callback])
-"""
 
 test_data_set = tf.data.experimental.make_csv_dataset(
     file_pattern="../../data/avazu_ctr/train_data.csv",
