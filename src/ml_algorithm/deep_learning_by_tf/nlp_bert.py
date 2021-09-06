@@ -16,6 +16,9 @@ Bert论文：https://arxiv.org/pdf/1810.04805.pdf
     前者可以认为是基于上下文预测中心词；后者是一个分类问题，预测后一个句子是否是前一个句子的下一句
 应用Demo如下：
 """
+
+# tensorflow version:2.6.0
+
 import tensorflow_text as text
 import tensorflow_hub as hub
 import tensorflow as tf
@@ -65,6 +68,49 @@ def bert_pairs_seqs_demo(seq1, seq2):
     print(out)
 
 
+def produce_train_dataset(file_path):
+    if isinstance(file_path, str):
+        file_path = [file_path]
+
+    def line_split(seq):
+        cols = tf.strings.split(seq, "\t")
+        # 返回格式（seq1，seq2），label
+        return (cols[1], cols[2]), int(cols[0])
+
+    return tf.data.TextLineDataset(file_path).map(line_split).batch(1)
+
+
+def bert_pairs_seqs_train(file_path):
+    preprocessor = hub.load("https://hub.tensorflow.google.cn/tensorflow/bert_zh_preprocess/3")
+    # Step 1: tokenize batches of text inputs.
+    seq1 = tf.keras.layers.Input(shape=(), dtype=tf.string, name="seq1")
+    seq2 = tf.keras.layers.Input(shape=(), dtype=tf.string, name="seq2")
+    tokenize = hub.KerasLayer(preprocessor.tokenize)
+    tokenized_inputs = [tokenize(seq1), tokenize(seq2)]
+    # Step 3: pack input sequences for the Transformer encoder.
+    seq_length = 128  # Your choice here.
+    bert_pack_inputs = hub.KerasLayer(
+        preprocessor.bert_pack_inputs,
+        arguments=dict(seq_length=seq_length))  # Optional argument.
+    encoder_inputs = bert_pack_inputs(tokenized_inputs)
+    # -----可以设置为训练或者不训练原有参数-----
+    encoder = hub.KerasLayer("https://hub.tensorflow.google.cn/tensorflow/bert_zh_L-12_H-768_A-12/4", trainable=False)
+    outputs = encoder(encoder_inputs)
+    pooled_output = outputs["pooled_output"]  # [batch_size, 768].
+    sequence_output = outputs["sequence_output"]  # [batch_size, seq_length, 768].
+    cls = sequence_output[:, 1]
+    out = tf.keras.layers.Dense(units=1, activation="sigmoid")(cls)
+    embedding_model = tf.keras.Model(inputs=[seq1, seq2], outputs=[out])
+    embedding_model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=1e-3),
+                            loss=tf.keras.losses.BinaryCrossentropy(),
+                            metrics=[tf.keras.metrics.BinaryAccuracy(),
+                                     tf.keras.metrics.FalseNegatives()])
+    ds = produce_train_dataset(file_path)
+    embedding_model.summary()
+    embedding_model.fit(ds, epochs=10)
+
+
 if __name__ == '__main__':
-    bert_single_seqs_demo("早上好")
-    bert_pairs_seqs_demo("早上好", "吃饭了吗")
+    # bert_single_seqs_demo("早上好")
+    # bert_pairs_seqs_demo("早上好", "吃饭了吗")
+    bert_pairs_seqs_train("./bert_pairs_data.txt")
