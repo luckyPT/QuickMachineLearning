@@ -9,7 +9,7 @@ def prediction_rule(traj, pre_points_count, avg_points=1):
         velocity_ys.append(traj[i][1] - traj[i - 1][1])
     velocity_x = np.mean(velocity_xs)
     velocity_y = np.mean(velocity_ys)
-    cur_points = traj[-1]
+    cur_points = list(traj[-1])
     pre_points = []
     for i in range(pre_points_count):
         cur_points[0] += velocity_x

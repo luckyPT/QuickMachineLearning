@@ -29,5 +29,8 @@ def show():
 if __name__ == '__main__':
     data_dir = '../../../data/avgoverse/motion_forecasting/data'
     afl = ArgoverseForecastingLoader(data_dir)
-    plot_lane_border(afl.agent_traj)
-    plt.show()
+    for name in afl.seq_list:
+        afl_ = afl.get(name)
+        plot_traj(afl_.agent_traj[:-20])
+        plot_traj(afl_.agent_traj[-20:], color='blue')
+        plt.show()
