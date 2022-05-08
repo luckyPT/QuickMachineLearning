@@ -1,7 +1,16 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from src.data.sk_data import Iris
+
+# from src.data.sk_data import Iris
+
+
+def points_group(*point_seq):
+    point_all = np.vstack(point_seq)
+    labels = []
+    for i in range(len(point_seq)):
+        labels += [i] * len(point_seq[i])
+    plot_scatter(point_all, labels)
 
 
 def plot_scatter(x, y):
@@ -36,6 +45,7 @@ def plot_line(*args):
 
 
 if __name__ == '__main__':
+    """
     x = Iris.features[:, :2]
     y = Iris.label
     plot_scatter(x, y)
@@ -48,3 +58,5 @@ if __name__ == '__main__':
     x3 = np.arange(-10, 10, 0.1)
     y3 = 2 * np.cos(x3) + 1
     plot_line(x1, y1, x2, y2, x3, y3)
+    """
+    pass
